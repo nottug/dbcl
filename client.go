@@ -2,14 +2,17 @@ package dbcl
 
 import (
 	"fmt"
+	"time"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
 
 const (
-	maxIdleConns = 35
-	maxOpenConns = 50
+	maxIdleConns = 20
+	maxOpenConns = 35
+	maxIdleTime  = time.Minute * 5
+	maxLifetime  = time.Minute * 30
 
 	defaultQs = "?multiStatements=true&parseTime=true&loc=UTC"
 )
@@ -64,6 +67,8 @@ func initConnection(dsn string) (*sqlx.DB, error) {
 
 	client.DB.SetMaxIdleConns(maxIdleConns)
 	client.DB.SetMaxOpenConns(maxOpenConns)
+	client.DB.SetConnMaxIdleTime(maxIdleTime)
+	client.DB.SetConnMaxLifetime(maxLifetime)
 
 	return client, nil
 }
